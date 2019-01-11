@@ -38,7 +38,8 @@ system("auditctl -s > $cfgout");
 my $result;
 my $i;
 my $line;
-my $iterations = 50;
+my $iterations_soft = 40;
+my $iterations      = 60;
 for ( $i = 0 ; $i < $iterations ; $i++ ) {    # iteration count
      # Kill the daemon, set the buffers low, set the wait time to 1ms, turn on auditing
     system("service auditd stop >/dev/null 2>&1");
@@ -55,9 +56,20 @@ for ( $i = 0 ; $i < $iterations ; $i++ ) {    # iteration count
     my $ping_pid = <$fh_out>;
     chomp($ping_pid);
 
+    # In first iterations audit only syscalls from the ping process,
+    # in later iterations push harder by auditting all syscalls
+    my $filter = "";
+    if ( $i < $iterations_soft ) {
+        $filter = "-F pid=$ping_pid";
+    }
+    if ( $i eq $iterations_soft ) {
+        if ( defined $ENV{ATS_DEBUG} && $ENV{ATS_DEBUG} == 1 ) {
+            print "Switching to aggressive mode (auditing all syscalls)...";
+        }
+    }
+
     # Add rule to generate audit queue events from floodping
-    $result =
-      system("auditctl -a exit,always -S all -F pid=$ping_pid >/dev/null 2>&1");
+    $result = system("auditctl -a exit,always -S all $filter >/dev/null 2>&1");
 
     my $counter = 0;
     my $timeout = 50;
