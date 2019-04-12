@@ -8,6 +8,9 @@ BEGIN { plan tests => 21 }
 use File::Temp qw/ tempfile /;
 use Time::HiRes qw(usleep);
 
+my $basedir = $0;
+$basedir =~ s|(.*)/[^/]*|$1|;
+
 ###
 # functions
 
@@ -120,6 +123,7 @@ open( my $tmpfile, ">", "/tmp/$key" );
 close($tmpfile);
 
 # test for the SYSCALL message provoked by creat
+system("$basedir/../audit_sync");
 $result = system(
 "ausearch -i -m SYSCALL -p $pid -ui $uid -gi $gid -ul $auid -su $subj_user:$subj_role:$subj_type:$subj_sen-$subj_clr -ts recent > $stdout 2> /dev/null"
 );
@@ -139,9 +143,8 @@ ok( $result, 0 );
 
 unlink "/tmp/$key";
 
-system("sync");
-
 # test for the SYSCALL message provoked by unlink
+system("$basedir/../audit_sync");
 $result = system(
 "ausearch -i -m SYSCALL -p $pid -ui $uid -gi $gid -ul $auid -su $subj_user:$subj_role:$subj_type:$subj_sen-$subj_clr -ts recent > $stdout2 2> /dev/null"
 );

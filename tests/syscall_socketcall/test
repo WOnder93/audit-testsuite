@@ -58,9 +58,8 @@ my $portno = 42424;
 # run the test
 system("echo Hello World. | $basedir/conn 127.0.0.1 $portno >/dev/null 2>&1");
 
-system("sleep 1;sync");
-
 # test if we generate any audit records from the filter rule
+system("$basedir/../audit_sync");
 my $result = system("ausearch -i -k $key > $stdout 2> $stderr");
 ok( $result, 0 );
 

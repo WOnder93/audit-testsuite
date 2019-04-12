@@ -7,6 +7,9 @@ BEGIN { plan tests => 29 }
 
 use File::Temp qw/ tempfile /;
 
+my $basedir = $0;
+$basedir =~ s|(.*)/[^/]*|$1|;
+
 ###
 # functions
 
@@ -99,13 +102,16 @@ sub do_test {
                 $expected[$_] = 0 if $_ != $exe;
             }
         }
-        system("auditctl -a always,exclude -F exe$op$execs[$exe]");
+        system(
+"auditctl -a always,exclude -F msgtype=SYSCALL -F exe$op$execs[$exe]"
+        );
     }
 
     # run the executables
     system("$_ > /dev/null 2> /dev/null") for (@execs);
 
     # test if we generate any audit records from the filter rule
+    system("$basedir/../audit_sync");
     my $result = system("ausearch -i -k $key > $stdout 2> $stderr");
     ok( $result, 0 );
 

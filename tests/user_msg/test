@@ -7,6 +7,9 @@ BEGIN { plan tests => 2 }
 
 use File::Temp qw/ tempdir tempfile /;
 
+my $basedir = $0;
+$basedir =~ s|(.*)/[^/]*|$1|;
+
 ###
 # functions
 
@@ -47,6 +50,7 @@ my $pid = <$fh_tmp>;
 chomp($pid);
 
 # test for the userspace message
+system("$basedir/../audit_sync");
 my $result = system("ausearch -m USER -p $pid > $stdout 2> $stderr");
 ok( $result, 0 );
 

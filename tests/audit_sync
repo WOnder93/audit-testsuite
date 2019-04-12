@@ -1,0 +1,15 @@
+#!/bin/bash
+
+log_file="$(grep -E '^\s*log_file\s*=\s*' /etc/audit/auditd.conf | \
+	sed -e 's/^.*=[[:space:]]*//')"
+log_file="${log_file:-/var/log/audit/audit.log}"
+
+key="audit-sync=$(head -c 10 /dev/urandom | hexdump -e '"%02x"')"
+
+# generate an event and wait for it to appear in the log
+tail -s 0.05 -n +1 -F "$log_file" | \
+	timeout 10s sed -e "/^type=USER.*msg='$key/Q" >/dev/null &
+
+auditctl -m "$key"
+
+wait $!

@@ -97,16 +97,14 @@ for ( 0 .. $#tests ) {
           . " -j MARK --set-mark 0x"
           . $mark[$_] );
 }
-sleep 1;
 
 # run the tests
 for ( 0 .. $#tests ) {
     system( $trig[$_] );
 }
 
-system("sleep 1; sync");
-
 # test if we generate any audit records from the filter rules
+system("$basedir/../audit_sync");
 my $result =
   system("ausearch -i -m NETFILTER_PKT -ts recent > $stdout 2> $stderr");
 ok( $result, 0 );

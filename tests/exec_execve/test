@@ -63,6 +63,7 @@ system("$basedir/execve_arg_gen size $test_size");
 system("$basedir/execve_arg_gen hex $test_hex");
 
 # test if we generate any audit records from the filter rule
+system("$basedir/../audit_sync");
 my $result = system("ausearch -i -k $key > $stdout 2> $stderr");
 ok( $result, 0 );
 

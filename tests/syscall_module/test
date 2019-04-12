@@ -55,9 +55,9 @@ system(
 my $name = "arp_tables";
 $result = system("modprobe $name >/dev/null 2>&1");
 ok( $result, 0 );    # Did the modprobe succeed?
-system("sleep 1;sync");
 
 # test if we generate any audit records from the filter rule
+system("$basedir/../audit_sync");
 $result = system("ausearch -k $key-load > $stdout 2> $stderr");
 ok( $result, 0 );    # Did the load search find records?
 
@@ -76,7 +76,7 @@ ok($found_name);    # Was the load module found?
 
 $result = system("rmmod $name");
 ok( $result, 0 );    # Did the rmmod succeed?
-system("sleep 1;sync");
+system("$basedir/../audit_sync");
 seek( $fh_out, 0, 0 );
 seek( $fh_err, 0, 0 );
 $found_name = 0;

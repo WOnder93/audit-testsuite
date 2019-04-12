@@ -7,6 +7,9 @@ BEGIN { plan tests => 4 }
 
 use File::Temp qw/ tempdir tempfile /;
 
+my $basedir = $0;
+$basedir =~ s|(.*)/[^/]*|$1|;
+
 ###
 # functions
 
@@ -69,6 +72,7 @@ system("auditctl -w $dir -k $key");
 unlink($filename);
 
 # test if we generate any audit records from the watch
+system("$basedir/../audit_sync");
 my $result = system("ausearch -i -k $key > $stdout 2> $stderr");
 ok( $result, 0 );
 

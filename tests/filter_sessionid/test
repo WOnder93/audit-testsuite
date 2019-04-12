@@ -7,6 +7,9 @@ BEGIN { plan tests => 3 }
 
 use File::Temp qw/ tempdir tempfile /;
 
+my $basedir = $0;
+$basedir =~ s|(.*)/[^/]*|$1|;
+
 ###
 # functions
 
@@ -64,6 +67,7 @@ my $pid = <$fh_pid>;
 chomp($pid);
 
 # test for the SYSCALL message
+system("$basedir/../audit_sync");
 $result = system(
 "ausearch -i -m SYSCALL -sc open -p $pid --session $sessionid -k $key > $stdout 2> $stderr"
 );

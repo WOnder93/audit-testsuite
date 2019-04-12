@@ -5,6 +5,9 @@ use File::Temp qw/ tempdir tempfile /;
 use Test;
 BEGIN { plan tests => 5 }
 
+my $basedir = $0;
+$basedir =~ s|(.*)/[^/]*|$1|;
+
 ###
 # functions
 
@@ -110,9 +113,8 @@ ok( $result, 0 );    # Was the reset command successful?
 my $reset_rc = $1;
 ok( $reset_rc > 0 );    # Was the lost value non-zero?
 
-sleep 1;
-
 # find the config change event
+system("$basedir/../audit_sync");
 seek( $fh_out, 0, 0 );
 seek( $fh_err, 0, 0 );
 $result = system(

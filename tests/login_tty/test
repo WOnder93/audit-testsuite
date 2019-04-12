@@ -7,6 +7,9 @@ BEGIN { plan tests => 2 }
 
 use File::Temp qw/ tempdir tempfile /;
 
+my $basedir = $0;
+$basedir =~ s|(.*)/[^/]*|$1|;
+
 ###
 # functions
 
@@ -56,6 +59,7 @@ my $pid = <$fh_tmp>;
 chomp($pid);
 
 # test for the LOGIN message
+system("$basedir/../audit_sync");
 my $result =
   system("ausearch -m LOGIN -p $pid -ts recent > $stdout 2> $stderr");
 ok( $result, 0 );
