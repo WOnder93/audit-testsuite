@@ -58,7 +58,7 @@ for ( $i = 0 ; $i < $iterations ; $i++ ) {    # iteration count
     # Add rule to generate audit queue events from floodping
     $result =
       system(
-"auditctl -a exit,always -F arch=b$ENV{MODE} -S all -F pid=$ping_pid >/dev/null 2>&1"
+"auditctl -a exit,always -F arch=b$ENV{MODE} -S all >/dev/null 2>&1"
       );
 
     my $counter = 0;
@@ -85,7 +85,7 @@ for ( $i = 0 ; $i < $iterations ; $i++ ) {    # iteration count
 
     kill 'TERM', $ping_pid;
     system(
-"auditctl -d exit,always -F arch=b$ENV{MODE} -S all -F pid=$ping_pid >/dev/null 2>&1"
+"auditctl -d exit,always -F arch=b$ENV{MODE} -S all >/dev/null 2>&1"
     );
 
     # Restart the daemon to collect messages in the log
