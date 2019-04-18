@@ -50,10 +50,9 @@ list:
 	@echo
 
 test: all
-	@DISTRO="$(DISTRO)"                 \
-	 MODE="$(MODE)"                     \
-	 TESTS="$(TESTS)"                   \
-	 PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+	@DISTRO="$(DISTRO)" \
+	 MODE="$(MODE)"     \
+	 TESTS="$(TESTS)"   \
 	 ./runtests.pl
 
 clean: 
