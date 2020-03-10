@@ -2,7 +2,19 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
+#include <sys/syscall.h>
 #include <sys/time.h>
+
+static int gettimeofday_syscall(struct timeval *tv)
+{
+	return syscall(SYS_gettimeofday, tv, NULL);
+}
+
+static int settimeofday_syscall(const struct timeval *tv)
+{
+	return syscall(SYS_settimeofday, tv, NULL);
+}
 
 int main(int argc, char **argv)
 {
@@ -45,17 +57,17 @@ int main(int argc, char **argv)
 			return 1;
 		}
 	} else if (strcmp(mode, "settimeofday") == 0) {
-		ret = gettimeofday(&tv_orig, NULL);
+		ret = gettimeofday_syscall(&tv_orig);
 		if (ret) {
 			perror("gettimeofday");
 			return 1;
 		}
-		ret = settimeofday(&tv, NULL);
+		ret = settimeofday_syscall(&tv);
 		if (ret) {
 			perror("settimeofday (set)");
 			return 1;
 		}
-		ret = settimeofday(&tv_orig, NULL);
+		ret = settimeofday_syscall(&tv_orig);
 		if (ret) {
 			perror("settimeofday (reset)");
 			return 1;
